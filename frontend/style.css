@@ -1,0 +1,310 @@
+@font-face {
+    font-family: KodeMono;
+    src: url('fonts/Kode_Mono/KodeMono-VariableFont_wght.ttf');
+}
+
+* {
+    box-sizing: border-box;
+}
+html {
+    margin-top: 0px;
+    padding-top: 0px;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    max-height: 100%;
+}
+
+@media (width <= 1000px) {
+    body {
+        font-size: 6px;
+    }
+    .control-bar-button {
+        font-size: 6px;
+        height: 16px;
+        min-width: 16px;
+    }
+    .slider {
+        margin-top: 5px;
+        margin-left: 4px;
+        margin-right: 4px;
+        height: 2px;
+        width: 4em;
+    }
+    .slider::-moz-range-thumb {
+        width: 5px;
+        height: 16px;
+    }
+
+    #playing-song-now-playing {
+        min-height: 16px;
+        max-height: 16px;
+        min-width: 8em;
+        max-width: 8em;
+        margin-left: 1em;
+    }
+    #draw-canvas-1 {
+        height: 16px;
+    }
+    .music-row-div {
+        max-height: 12px;
+        min-height: 12px;
+    }
+}
+@media (width > 1000px) {
+    body {
+        font-size: 14px;
+    }
+    .control-bar-button {
+        font-size: 15px;
+        height: 24px;
+        min-width: 24px;
+    }
+    .slider {
+        margin-top: 10px;
+        margin-left: 4px;
+        margin-right: 4px;
+        height: 4px;
+        width: 6em;
+    }
+    .slider::-moz-range-thumb {
+        width: 8px;
+        height: 24px;
+    }
+
+    #playing-song-now-playing {
+        min-height: 24px;
+        max-height: 24px;
+        min-width: 16em;
+        max-width: 16em;
+        margin-left: 1em;
+    }
+    .music-row-div {
+        max-height: 28px;
+        min-height: 28px;
+    }
+}
+
+body {
+    margin: 0px;
+    overflow-x: hidden;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    max-height: 100%;
+    font-family: KodeMono, monospace;
+    background-color: #656257;
+}
+
+#app {
+    position: relative;
+    min-height: 100vh;
+    max-height: 100vh;
+    height: 100vh;
+    margin-bottom: 0px;
+    overflow: auto;
+}
+
+button {
+    font-family: inherit;
+}
+ul {
+    padding: 0px;
+    margin: 0px;
+}
+
+#menu-bar {
+    display: flex;
+    flex-direction: row;
+    overflow: auto;
+    max-height: fit-content;
+}
+
+.control-bar-button {
+    text-align: center;
+}
+
+#refresh-list-button {
+    min-width: fit-content !important;
+}
+
+.slider {
+    opacity: 0.7;
+}
+
+/* Mozilla-specific handle */
+.slider::-moz-range-thumb {
+    background: papayawhip;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+#volume-slider {
+}
+
+#info-button {
+    position: absolute;
+    right: 0px;
+}
+
+#playing-song-bar {
+    display: grid;
+    grid-gap: 0rem;
+    grid-auto-flow: column;
+    justify-content: end;
+    width: 100%;
+    grid-template-areas: 'a b';
+    margin-right: 3vw;
+}
+
+#playing-song-now-playing {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: snow;
+    background-color: #454d49;
+    border: 2px inset gray;
+    grid-area: a;
+    font-weight: bold;
+}
+#draw-canvas-1 {
+    background-image: linear-gradient(to bottom, blue, #3b88c3);
+    border: 2px inset gray;
+    grid-area: b;
+}
+
+.gradient-bar {
+    width: 100%;
+    height: 3vw;
+    background-image: linear-gradient(
+        to bottom,
+        #ffefef61,
+        transparent,
+        transparent
+    );
+    overflow: auto;
+
+}
+#gradient-bar-top {
+}
+#gradient-bar-bottom {
+}
+
+canvas {
+    margin-bottom: 0px;
+}
+
+#draw-canvas-2 {
+    width: 100%;
+    background-color: black;
+    overflow: auto;
+}
+#player {
+    display: flex;
+    flex-direction: column;
+    background-size: 25%;
+    background-color: #736f6f;
+    width: 100%;
+    height: 100%;
+}
+
+#library-container {
+    flex: 1;
+    height: 100%;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 0.38fr 1.618fr;
+    overflow: auto;
+    background-image: linear-gradient(to bottom, #adc2cf, #c0e0bb);
+}
+
+#music-row-container {
+    grid-column: 2 / 2;
+    border: 2px inset gray;
+    width: 100%;
+    display: flex;
+    align-items: start;
+    height: 100%;
+    padding: 1vw;
+    flex-direction: column;
+}
+
+.disable-hover {
+    pointer-events: none;
+}
+
+.playing-music-row {
+    color: blue;
+}
+
+.music-row-div {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 2fr 8fr 1fr;
+    margin: 0px;
+    box-sizing: border-box;
+}
+
+.music-row-div:hover {
+    opacity: 98%;
+}
+
+.music-row-item {
+}
+.song-name {
+    font-weight: bold;
+}
+.song-file-name {
+}
+
+.song-file-type {
+    font-style: italic;
+}
+
+.info-box {
+    display: flex;
+    flex-direction: column;
+    grid-column: 1 / 2;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: auto;
+    border: 2px inset gray;
+}
+
+.info-label {
+    background-color: #1e4a506b;
+    color: white;
+    border-radius: 0% 0% 0% 0%;
+    height: fit-content;
+    font-weight: bold;
+    text-align: justify;
+    padding-left: 4%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+}
+
+.info-content {
+    overflow-y: scroll;
+    padding: 4%;
+    background-color: transparent;
+    align-items: center;
+    display: flex;
+}
+
+#info-box-name-info,
+#info-box-filename,
+#info-box-format {
+    min-height: 2em;
+    max-height: 2em;
+    padding-left: 1vw;
+}
+
+#info-box-instrument-comment {
+    white-space: pre-wrap;
+    height: 100%;
+    display: table-cell !important;
+    text-align: right;
+    padding-right: 1vw;
+}

@@ -1,0 +1,21 @@
+[package]
+name = "cordial_wasm"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0"
+publish = false
+
+[lib]
+name = "cordial_wasm"
+crate-type = ["cdylib"]
+path = "src/lib.rs"
+
+[profile.release]
+lto = true
+
+[features]
+
+[dependencies]
+wasm-bindgen = "0.2.92"
+xmrs = { version = "0.6.2", features=["std"] }
+xmrsplayer = "0.6.2"
