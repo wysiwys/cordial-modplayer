@@ -202,7 +202,7 @@ export default {
             </button>
         </div>
         <div id="gradient-bar-top" class="gradient-bar"></div>
-    	<canvas id="draw-canvas-2" class="audio-visualizer"></canvas>
+        <canvas id="draw-canvas-2" class="audio-visualizer"></canvas>
         <div id="library-container">
             <component v-bind:is="selectedSong"></component>
             <MusicLibrary :songs="library"></MusicLibrary>

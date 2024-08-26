@@ -164,8 +164,8 @@ export class FFTVisualizer extends Visualizer {
                 'Could not create gradient; failed to initialize canvas context',
             );
         }
-	this.canvasContext.fillStyle = "#000000";
-	this.canvasContext.fillRect(0, 0, this.width, this.height);
+        this.canvasContext.fillStyle = '#000000';
+        this.canvasContext.fillRect(0, 0, this.width, this.height);
 
         let gradient = this.canvasContext.createLinearGradient(
             0,
@@ -190,14 +190,13 @@ export class FFTVisualizer extends Visualizer {
             return;
         }
 
-
-	this.canvasContext.fillStyle = "#00000014";
-	this.canvasContext.fillRect(0, 0, this.width, this.height);
+        this.canvasContext.fillStyle = '#00000014';
+        this.canvasContext.fillRect(0, 0, this.width, this.height);
 
         this.canvasContext.strokeStyle = this.gradient ?? 'orange';
         this.canvasContext.lineWidth = 1;
 
-	this.canvasContext.beginPath();
+        this.canvasContext.beginPath();
         const sliceWidth = this.width / this.dataArray.length;
         let x = 0;
         for (let i = 0; i < this.dataArray.length; i++) {
@@ -210,8 +209,6 @@ export class FFTVisualizer extends Visualizer {
             }
             x += sliceWidth;
         }
-	this.canvasContext.stroke();
-
-
+        this.canvasContext.stroke();
     }
 }
