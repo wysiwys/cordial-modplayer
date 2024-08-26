@@ -4,7 +4,7 @@
 
 # Purpose
 
-To challenge myself to write a WASM module with Rust, learn the Web Audio API, and understand module tracker formats better.
+To challenge myself to write a WASM module with Rust, learn the Web Audio API, and understand tracker module formats better.
 
 # Architecture
 
@@ -12,6 +12,7 @@ To challenge myself to write a WASM module with Rust, learn the Web Audio API, a
 - Analyzer nodes for client-side audio visualizations
 - Axum backend for simple web server and filesystem interactions
 - GUI created with TypeScript and Vue.js
+- Bundling with Vite
 
 # License
 
