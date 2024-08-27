@@ -20,6 +20,7 @@ use xmrs::xm::xmmodule::XmModule;
 use xmrsplayer::prelude::*;
 
 #[wasm_bindgen]
+#[derive(Clone)]
 pub struct InnerMetadata {
     instrument_comment: String,
 }
@@ -33,10 +34,10 @@ impl InnerMetadata {
 }
 
 #[wasm_bindgen(js_name = extractMetadata)]
-pub fn extract_metadata(data: Vec<u8>, file_type: &str) -> InnerMetadata {
+pub fn extract_metadata(data: &[u8], file_type: &str) -> InnerMetadata {
     let module = match file_type {
-        "Xm" => XmModule::load(&data).unwrap().to_module(),
-        "Amiga" => AmigaModule::load(&data).unwrap().to_module(),
+        "Xm" => XmModule::load(data).unwrap().to_module(),
+        "Amiga" => AmigaModule::load(data).unwrap().to_module(),
         _ => panic!("Unsupported module type"),
     };
 
@@ -48,6 +49,51 @@ pub fn extract_metadata(data: Vec<u8>, file_type: &str) -> InnerMetadata {
         .join("\n");
 
     InnerMetadata { instrument_comment }
+}
+
+#[wasm_bindgen]
+pub struct ExtractedSongInfo {
+    name: String,
+    inner_metadata: InnerMetadata,
+}
+
+#[wasm_bindgen]
+impl ExtractedSongInfo {
+    #[wasm_bindgen]
+    pub fn name(&self) -> String {
+        self.name.clone()
+    }
+    #[wasm_bindgen(js_name = innerMetadata)]
+    pub fn inner_metadata(&self) -> InnerMetadata {
+        self.inner_metadata.clone()
+    }
+}
+
+#[wasm_bindgen(js_name = extractSongInfo)]
+pub fn extract_song_info(data: &[u8], file_type: &str) -> ExtractedSongInfo {
+    let module = match file_type {
+        "Xm" => XmModule::load(data).unwrap().to_module(),
+        "Amiga" => AmigaModule::load(data).unwrap().to_module(),
+        _ => panic!("Unsupported module type"),
+    };
+
+    let instrument_comment = module
+        .instrument
+        .into_iter()
+        .map(|instr| instr.name)
+        .collect::<Vec<_>>()
+        .join("\n");
+
+    let inner_metadata = InnerMetadata { instrument_comment };
+
+    let name = match module.name.find('\0') {
+        Some(pos) => module.name[0..pos].to_string(),
+        None => module.name,
+    };
+    ExtractedSongInfo {
+        name,
+        inner_metadata,
+    }
 }
 
 #[wasm_bindgen]

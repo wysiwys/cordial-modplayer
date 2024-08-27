@@ -31,12 +31,13 @@ async function run() {
 
     app.use(pinia);
 
+    let sharedPlayer = useSharedPlayer();
+    sharedPlayer.hasBackend = __HAS_BACKEND__;
+
     app.component('MusicRow', MusicRow);
     app.component('MusicLibrary', MusicLibrary);
 
     app.mount('#app');
-
-    let sharedPlayer = useSharedPlayer();
 
     await sharedPlayer.init();
 

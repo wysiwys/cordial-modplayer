@@ -11,16 +11,37 @@
     You should have received a copy of the GNU General Public License along with cordial-modplayer. If not, see <https://www.gnu.org/licenses/>. 
 
 */
-import { InnerMetadata, extractMetadata } from '../pkg';
+import { InnerMetadata, extractMetadata, extractSongInfo } from '../pkg';
 
 export default class SongInfo {
     id: number;
     name: string;
-    url: string;
+    url: string | null;
     fileName: string;
     fileType: string;
     innerMetadata: InnerMetadata | null = null;
 
+    static fromBytes(
+        id: number,
+        bytes: Uint8Array,
+        fileName: string,
+        fileType: string,
+    ): SongInfo | undefined {
+        try {
+            let extracted = extractSongInfo(bytes, fileType);
+
+            return new SongInfo({
+                id: id,
+                name: extracted.name(),
+                url: null,
+                file_name: fileName,
+                file_type: fileType,
+                innerMetadata: extracted.innerMetadata(),
+            });
+        } catch (e) {
+            return undefined;
+        }
+    }
     constructor(obj: any) {
         try {
             const {
@@ -39,6 +60,10 @@ export default class SongInfo {
         } catch (e) {
             throw new Error('Failed to destructure object into SongInfo');
         }
+        // XXX: is this right?
+        if (obj.innerMetadata !== undefined) {
+            this.innerMetadata = obj.innerMetadata;
+        }
     }
     instrumentComment(): String | null {
         if (this.innerMetadata === null) {
@@ -49,6 +74,11 @@ export default class SongInfo {
     }
     async updateMetadata() {
         if (this.innerMetadata !== null) {
+            return;
+        }
+
+        if (this.url === null) {
+            console.error('No url; failed to update metadata for song');
             return;
         }
 

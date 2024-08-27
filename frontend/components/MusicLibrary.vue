@@ -16,19 +16,33 @@
 import SongInfo from '../typescript_src/songInfo.ts';
 import MusicRow from './MusicRow.vue';
 import { useSharedPlayer } from '../typescript_src/player.ts';
-import { useVirtualList } from '@vueuse/core';
-import { h, computed, defineProps } from 'vue';
+import { useVirtualList, useDropZone } from '@vueuse/core';
+import { h, ref, computed, defineProps } from 'vue';
 
 interface SongEntry {
     song: SongInfo;
     index: number;
 }
 
+let player = useSharedPlayer();
+
 const props = defineProps({
     songs: {
         type: Array<SongEntry>,
         required: true,
     },
+});
+
+const dropZoneRef = ref<HTMLElement>();
+async function onDrop(files: File[] | null) {
+    files.forEach(async (file) => {
+        await player.addSong(file);
+    });
+}
+
+const { isOverDropZone } = useDropZone(dropZoneRef, {
+    onDrop,
+    dataTypes: ['audio/x-xm', 'audio/x-mod'],
 });
 
 // XXX: hacky way to get the max-height of `music-row-div`
@@ -53,7 +67,7 @@ const { list, containerProps, wrapperProps } = useVirtualList(
 
 <template>
     <div id="music-row-container" v-bind="containerProps">
-        <div id="wrapper-props" v-bind="wrapperProps">
+        <div ref="dropZoneRef" id="wrapper-props" v-bind="wrapperProps">
             <MusicRow
                 v-for="item in list"
                 :key="item.index"

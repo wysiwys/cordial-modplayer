@@ -4,7 +4,8 @@
     "version": "0.1.0",
     "type": "module",
     "scripts": {
-        "build": "rimraf dist pkg && wasm-pack build --release --target web && tsc --noEmit && npx vite build"
+        "build": "rimraf dist pkg && wasm-pack build --release --target web && tsc --noEmit && HAS_BACKEND=1 npx vite build",
+        "buildOffline": "rimraf dist pkg && wasm-pack build --release --target web && tsc --noEmit && HAS_BACKEND=0 npx vite build"
     },
     "browser": {
         "fs": false
@@ -19,6 +20,7 @@
     "dependencies": {
         "@vitejs/plugin-vue": "^5.1.2",
         "@vueuse/core": "^11.0.0",
+        "idb": "^8.0.0",
         "pinia": "^2.2.1",
         "vue": "^3.4.37"
     }

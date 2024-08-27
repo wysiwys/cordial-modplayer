@@ -30,7 +30,6 @@ import imgUrl from '../images/wood92.jpg';
 export default {
     data() {
         return {
-            songs: [],
             volumeLevel: 1,
             player: useSharedPlayer(),
             hasBackground: false,
@@ -50,7 +49,14 @@ export default {
         },
 
         library() {
-            return this.songs;
+            let id = 0;
+
+            return this.player.getSongs().map((songInfo) => {
+                let entry = { song: songInfo, index: id };
+
+                id++;
+                return entry;
+            });
         },
         muteIcon() {
             let muted = this.player.muted;
@@ -121,15 +127,6 @@ export default {
         },
         async updateList() {
             await this.player.updateSongs();
-
-            let id = 0;
-
-            this.songs = this.player.getSongs().map((songInfo) => {
-                let entry = { song: songInfo, index: id };
-
-                id++;
-                return entry;
-            });
         },
         async toggleTheme() {
             if (this.hasBackground) {

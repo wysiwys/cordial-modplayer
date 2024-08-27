@@ -59,19 +59,11 @@ impl TryFrom<Extension> for FileType {
 // Serializable wire format
 #[derive(Debug, Clone, Serialize)]
 pub(crate) struct SongLoadInfo {
-    /*
-    pub(crate) name: String,
-    pub(crate) file_name: String,
-    pub(crate) file_type: String,
-    pub(crate) comment: String,
-    pub(crate) instrument_comment: String,
-    */
     pub(crate) id: usize,
     pub(crate) url: String,
     pub(crate) file_name: String,
     pub(crate) file_type: FileType,
     pub(crate) name: String,
-    //pub(crate) instrument_comment: String,
 }
 
 fn file_name_to_url(file_name: &str) -> String {

@@ -11,6 +11,7 @@ crate-type = ["cdylib"]
 path = "src/lib.rs"
 
 [profile.release]
+strip = true
 lto = true
 
 [features]

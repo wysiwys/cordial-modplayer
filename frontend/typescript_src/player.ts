@@ -14,6 +14,7 @@
 import { defineStore } from 'pinia';
 import SongInfo from './songInfo.ts';
 import { BasicVisualizer, FFTVisualizer } from './visualizer.ts';
+import { DBHandler } from './DBHandler.ts';
 
 export enum NextSongSelectionStyle {
     Repeat = 0,
@@ -26,7 +27,7 @@ function timeout(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function randInt(max: number, min: number) {
+function randInt(min: number, max: number) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
@@ -37,6 +38,9 @@ export const useSharedPlayer = defineStore('main', {
         let gainNode = audioCtx.createGain();
 
         return {
+            hasBackend: true,
+            db: new DBHandler(),
+
             // Audio info
             audioContext: audioCtx,
             gainNode: gainNode,
@@ -56,7 +60,7 @@ export const useSharedPlayer = defineStore('main', {
             // Data info
             selectedSong: null as number | null,
             playingSong: null as number | null,
-            songs: [],
+            songs: [] as SongInfo[],
 
             // State
             nextSongSelectionStyle: NextSongSelectionStyle.Shuffle,
@@ -74,11 +78,54 @@ export const useSharedPlayer = defineStore('main', {
             this.visualizer_1.initialize();
             this.visualizer_2.initialize();
             this.visualizer_2.setWidth(window.innerWidth);
+
+            this.db.init();
+        },
+        getNextIndex(): number {
+            let lastSong = this.songs.at(-1);
+            if (lastSong === undefined) {
+                return 0;
+            } else {
+                // Assumes that last song has highest idx
+                return lastSong.id + 1;
+            }
+        },
+        async addSong(file: File) {
+            let fileType;
+            let fileName = file.name;
+            let bytes = new Uint8Array(await file.arrayBuffer());
+            let ext = fileName.split('.').pop();
+            if (ext === undefined) {
+                console.error('File missing extension');
+                return;
+            }
+            let fileExt = ext.toLowerCase();
+            if (fileExt == 'mod') {
+                fileType = 'Amiga';
+            } else if (fileExt == 'xm') {
+                fileType = 'Xm';
+            } else {
+                console.error(`Unsupported filetype: ${fileExt}`);
+                return;
+            }
+
+            // XXX: for now, the id is just the index in songInfo.
+            let songInfo = SongInfo.fromBytes(0, bytes, fileName, fileType);
+            if (songInfo === undefined) {
+                console.error(`Error adding song: ${fileName}`);
+                return;
+            }
+            let idx = this.songs.push(songInfo) - 1;
+            songInfo.id = idx;
+
+            await this.db.addSong({ id: songInfo.id, bytes: bytes });
         },
         async updateSongs() {
-            let rawData = await fetch('/info');
-            let json = await rawData.json();
-            this.songs = json.map((data: any) => new SongInfo(data));
+            if (this.hasBackend) {
+                let rawData = await fetch('/info');
+                let json = await rawData.json();
+                this.songs = json.map((data: any) => new SongInfo(data));
+            }
         },
         getSongs() {
             return this.songs;
@@ -128,9 +175,23 @@ export const useSharedPlayer = defineStore('main', {
                 return;
             }
 
-            await this.workletInit(song.url, song.fileType);
+            if (this.hasBackend && song.url !== null) {
+                let response = await fetch(song.url);
+                let blob = await response.blob();
+                let bytes = new Uint8Array(await blob.arrayBuffer());
+                await this.workletInit(bytes, song.fileType);
+            } else {
+                let bytes = await this.db.getSong(idx);
+                if (bytes === null) {
+                    console.error(
+                        'Song not available: bytes not stored locally',
+                    );
+                    return;
+                }
+                await this.workletInit(bytes, song.fileType);
+            }
         },
-        async workletInit(url: string, fileType: string) {
+        async workletInit(songBytes: Uint8Array, fileType: string) {
             // must clear worklet beforehand
             await this.workletClear();
 
@@ -155,13 +216,10 @@ export const useSharedPlayer = defineStore('main', {
                         bytes: bytes,
                     });
                 } else if (e.data.type == 'FETCH_MUSIC') {
-                    let response = await fetch(url);
-                    let blob = await response.blob();
-                    let bytes = new Uint8Array(await blob.arrayBuffer());
                     await xmrsNode.port.postMessage({
                         type: 'SEND_MUSIC',
                         fileType: fileType,
-                        bytes: bytes,
+                        bytes: songBytes,
                     });
                 } else if (e.data.type == 'READY') {
                     await xmrsNode.connect(this.gainNode);
