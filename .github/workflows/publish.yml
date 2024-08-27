@@ -36,7 +36,7 @@ jobs:
           cp -r $GITHUB_WORKSPACE/frontend/dist ./_site
           ls -lh ./_site
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v1
         with: 
           name: 'github-pages'
           path: ./_site/
