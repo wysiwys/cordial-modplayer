@@ -17,6 +17,9 @@ use paths::*;
 mod fs;
 use fs::*;
 
+mod launcher;
+use launcher::launcher;
+
 use axum::{
     extract::State,
     http::{HeaderValue, Method, StatusCode},
@@ -70,14 +73,13 @@ fn configure(config: &Config) {
         std::fs::create_dir_all(&user_data_dir).unwrap();
     }
 
-    println!("Music directory: file://{}", config.music_dir.display());
     if config.music_dir == user_music_dir() && !config.music_dir.exists() {
         std::fs::create_dir(&config.music_dir).unwrap();
     }
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> eframe::Result {
     let args = Args::parse();
 
     if args.tracing {
@@ -91,7 +93,7 @@ async fn main() {
             .init();
     }
 
-    let config = args.to_config();
+    let mut config = args.to_config();
 
     configure(&config);
 
@@ -101,11 +103,15 @@ async fn main() {
         .await
         .unwrap_or(TcpListener::bind("localhost:0").await.unwrap());
 
-    let port = listener.local_addr().unwrap().port();
+    // Update with correct port
+    let local_addr = listener.local_addr().unwrap();
+    config.port = local_addr.port();
 
-    let router = make_router(&config, port).with_state(config);
+    let router = make_router(&config).with_state(config.clone());
 
-    tokio::join!(serve(router, listener));
+    tokio::spawn(serve(router, listener));
+
+    launcher(&config)
 }
 
 impl TryFrom<String> for FileType {
@@ -129,9 +135,9 @@ async fn music_info(State(config): State<Config>) -> Result<Json<Vec<SongLoadInf
     Ok(Json(songs_list.0))
 }
 
-fn make_router(config: &Config, port: u16) -> Router<Config> {
+fn make_router(config: &Config) -> Router<Config> {
     let cors = CorsLayer::new().allow_methods([Method::GET]).allow_origin(
-        format!("http://localhost:{}", port)
+        format!("http://localhost:{}", config.port)
             .parse::<HeaderValue>()
             .unwrap(),
     );
@@ -144,7 +150,6 @@ fn make_router(config: &Config, port: u16) -> Router<Config> {
 }
 
 async fn serve(app: Router, listener: TcpListener) {
-    println!("App address: http://{}", listener.local_addr().unwrap());
     axum::serve(listener, app.layer(TraceLayer::new_for_http()))
         .await
         .unwrap();
