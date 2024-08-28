@@ -2,6 +2,12 @@
 
 `cordial-modplayer` is a simple browser-based player for music tracker modules. Currently it supports Amiga and Xm modules.
 
+# Web player
+
+Try it out at https://wysiwys.github.io/cordial-modplayer/
+
+Drag and drop XM or MOD files into the page, and double click to play
+
 # Purpose
 
 To challenge myself to write a WASM module with Rust, learn the Web Audio API, and understand tracker module formats better.
