@@ -34,7 +34,6 @@ jobs:
           npm --prefix $GITHUB_WORKSPACE/frontend run buildOffline
           find $GITHUB_WORKSPACE/frontend/dist/ -type d -exec chmod 755 {} \;
           find $GITHUB_WORKSPACE/frontend/dist/ -type f -exec chmod 644 {} \;
-          find $GITHUB_WORKSPACE/frontend/dist/ -type f -print0 | xargs -0 sed -i 's/\/assets/\/cordial-modplayer\/assets/g'
           tar -cvf github-pages.tar -C $GITHUB_WORKSPACE/frontend/dist .
           
       - name: Upload artifact

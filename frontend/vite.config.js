@@ -12,6 +12,8 @@ function hasBackend() {
     }
 }
 export default defineConfig({
+    // TODO: fix for desktop player
+    base: '/cordial-modplayer',
     define: {
         __HAS_BACKEND__: hasBackend(),
     },
