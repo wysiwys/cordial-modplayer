@@ -31,7 +31,7 @@ jobs:
           npm --prefix $GITHUB_WORKSPACE/frontend ci
       - name: Build
         run: |
-          npm --prefix $GITHUB_WORKSPACE/frontend run buildOffline
+          npm --prefix $GITHUB_WORKSPACE/frontend run buildOfflineWeb
           find $GITHUB_WORKSPACE/frontend/dist/ -type d -exec chmod 755 {} \;
           find $GITHUB_WORKSPACE/frontend/dist/ -type f -exec chmod 644 {} \;
           tar -cvf github-pages.tar -C $GITHUB_WORKSPACE/frontend/dist .

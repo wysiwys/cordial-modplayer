@@ -5,7 +5,8 @@
     "type": "module",
     "scripts": {
         "build": "rimraf dist pkg && wasm-pack build --release --target web && tsc --noEmit && HAS_BACKEND=1 npx vite build",
-        "buildOffline": "rimraf dist pkg && wasm-pack build --release --target web && tsc --noEmit && HAS_BACKEND=0 npx vite build"
+        "buildOffline": "rimraf dist pkg && wasm-pack build --release --target web && tsc --noEmit && HAS_BACKEND=0 npx vite build",
+        "buildOfflineWeb": "rimraf dist pkg && wasm-pack build --release --target web && tsc --noEmit && BASE_PATH=\"/cordial-modplayer\" HAS_BACKEND=0 npx vite build"
     },
     "browser": {
         "fs": false
