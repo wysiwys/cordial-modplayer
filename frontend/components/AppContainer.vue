@@ -29,7 +29,7 @@ async function onDrop(files: File[] | null) {
 }
 const { isOverDropZone } = useDropZone(dropZoneRef, {
     onDrop,
-    dataTypes: ['audio/x-xm', 'audio/x-mod'],
+    //dataTypes: ['audio/x-xm', 'audio/x-mod'],
 });
 </script>
 <template>
