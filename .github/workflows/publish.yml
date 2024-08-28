@@ -32,14 +32,13 @@ jobs:
       - name: Build
         run: |
           npm --prefix $GITHUB_WORKSPACE/frontend run buildOffline
-          mkdir ./_site
-          cp -r $GITHUB_WORKSPACE/frontend/dist ./_site
-          ls -lh ./_site/dist
+          tar -cvf ./github-pages.tar $GITHUB_WORKSPACE/frontend/dist
+          
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with: 
           name: 'github-pages'
-          path: ./_site/dist
+          path: ./github-pages.tar
           if-no-files-found: error
 
   # deploy job
