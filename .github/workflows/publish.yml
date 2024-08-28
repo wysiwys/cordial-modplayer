@@ -34,13 +34,13 @@ jobs:
           npm --prefix $GITHUB_WORKSPACE/frontend run buildOffline
           find $GITHUB_WORKSPACE/frontend/dist/ -type d -exec chmod 755 {} \;
           find $GITHUB_WORKSPACE/frontend/dist/ -type f -exec chmod 644 {} \;
-          tar -cvf ./github-pages.tar $GITHUB_WORKSPACE/frontend/dist
+          tar -cvf github-pages.tar -C $GITHUB_WORKSPACE/frontend/dist .
           
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with: 
           name: 'github-pages'
-          path: ./github-pages.tar
+          path: github-pages.tar
           if-no-files-found: error
 
   # deploy job
