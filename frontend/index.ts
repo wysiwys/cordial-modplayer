@@ -18,6 +18,7 @@ import { createPinia } from 'pinia';
 import { useSharedPlayer } from './typescript_src/player.js';
 
 import App from './components/App.vue';
+import AppContainer from './components/AppContainer.vue';
 import MusicRow from './components/MusicRow.vue';
 import MusicLibrary from './components/MusicLibrary.vue';
 
@@ -27,17 +28,18 @@ async function run() {
     await initWasm({ module_or_path: './assets/cordial_wasm_bg.wasm' });
 
     const pinia = createPinia();
-    const app = createApp(App);
+    const app = createApp(AppContainer);
 
     app.use(pinia);
 
     let sharedPlayer = useSharedPlayer();
     sharedPlayer.hasBackend = __HAS_BACKEND__;
 
+    app.component('App', App);
     app.component('MusicRow', MusicRow);
     app.component('MusicLibrary', MusicLibrary);
 
-    app.mount('#app');
+    app.mount('#app-container');
 
     await sharedPlayer.init();
 
