@@ -33,9 +33,8 @@ export default class XmrsProcessor extends AudioWorkletProcessor {
                     return;
                 }
                 try {
-                    // XXX: why need to divide sample rate by 2?
                     this.player = new Player(
-                        sampleRate / 2,
+                        sampleRate,
                         e.data.bytes,
                         e.data.fileType,
                     );
@@ -59,27 +58,29 @@ export default class XmrsProcessor extends AudioWorkletProcessor {
 
         this.port.postMessage({ type: 'FETCH_WASM' });
     }
-    process(inputs: any, outputs: any, parameters: any) {
+    process(inputs: any, outputs: Float32Array[][], parameters: any) {
         try {
             if (this.player === null) {
                 return false;
             }
+
             const output = outputs[0];
+            let channel1 = output[0];
+            let channel2 = output[1];
+
             let player = this.player as Player;
 
-            output.forEach((channel: any) => {
-                try {
-                    player.nextSamples(channel);
-                } catch (e) {
-                    if (e === PlayerError.SongOver) {
-                        throw new Error('Song over');
-                    } else if (e instanceof Error) {
-                        throw e;
-                    } else {
-                        throw new Error(`${e}`);
-                    }
+            try {
+                player.nextSamples(channel1, channel2);
+            } catch (e) {
+                if (e === PlayerError.SongOver) {
+                    throw new Error('Song over');
+                } else if (e instanceof Error) {
+                    throw e;
+                } else {
+                    throw new Error(`${e}`);
                 }
-            });
+            }
         } catch (e) {
             if (this.player !== null) {
                 this.player.free();

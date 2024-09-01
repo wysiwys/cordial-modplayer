@@ -132,14 +132,15 @@ impl Player {
     }
 
     #[wasm_bindgen(js_name = nextSamples)]
-    pub fn next_samples(&mut self, output: &mut [f32]) -> Result<(), PlayerError> {
-        // Check if playing has completed
-        // This is the same check that would be done in `player.next()`
-        if self.player.max_loop_count > 0 && self.player.loop_count >= self.player.max_loop_count {
-            return Err(PlayerError::SongOver);
+    pub fn next_samples(
+        &mut self,
+        chan1: &mut [f32],
+        chan2: &mut [f32],
+    ) -> Result<(), PlayerError> {
+        for i in 0..chan1.len() {
+            chan1[i] = self.player.next().ok_or(PlayerError::SongOver)?;
+            chan2[i] = self.player.next().ok_or(PlayerError::SongOver)?;
         }
-
-        self.player.generate_samples(output);
 
         Ok(())
     }

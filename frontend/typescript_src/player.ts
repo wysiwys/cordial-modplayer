@@ -198,6 +198,9 @@ export const useSharedPlayer = defineStore('main', {
             this.isReady = false;
 
             let options = {
+                numberOfOutputs: 1,
+                outputChannelCount: [2],
+                channelCount: 2,
                 processorOptions: {},
             };
 
